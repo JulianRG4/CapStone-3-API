@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import org.yearup.data.CategoryDao;
 import org.yearup.data.ProductDao;
 import org.yearup.models.Category;
@@ -42,7 +43,12 @@ public CategoriesController(CategoryDao categoryDao, ProductDao productDao)
     @GetMapping("/categories/{id}")
     public Category getById(@PathVariable int id)
     {
-       return categoryDao.getById(id);
+        Category category = categoryDao.getById(id);
+        if(category == null)
+        {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+        }
+       return category;
 
     }
 
@@ -51,7 +57,19 @@ public CategoriesController(CategoryDao categoryDao, ProductDao productDao)
     @GetMapping("{categoryId}/products")
     public List<Product> getProductsById(@PathVariable int categoryId)
     {
-        return productDao.getProductsByCategoryId(categoryId);
+        try
+        {
+            if(productDao.listByCategoryId(categoryId).isEmpty())
+            {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+            }else {
+                return productDao.listByCategoryId(categoryId);
+            }
+        }catch (Exception e)
+        {
+            throw new RuntimeException(e);
+        }
+
     }
 
     // add annotation to call this method for a POST action

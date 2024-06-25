@@ -8,6 +8,14 @@ public class ShoppingCart
 {
     private Map<Integer, ShoppingCartItem> items = new HashMap<>();
 
+    public ShoppingCart(int userId, int productId, int quantity)
+    {
+    }
+
+    public ShoppingCart()
+    {
+    }
+
     public Map<Integer, ShoppingCartItem> getItems()
     {
         return items;
@@ -41,6 +49,11 @@ public class ShoppingCart
                                 .reduce( BigDecimal.ZERO, (lineTotal, subTotal) -> subTotal.add(lineTotal));
 
         return total;
+    }
+
+    public void clear()
+    {
+        items.clear();
     }
 
 }
